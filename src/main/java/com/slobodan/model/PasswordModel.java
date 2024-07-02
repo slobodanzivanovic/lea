@@ -1,7 +1,11 @@
 package com.slobodan.model;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,6 +14,8 @@ import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Properties;
+import java.util.Scanner;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -24,8 +30,48 @@ public class PasswordModel {
 
   private String fileName;
 
-  public PasswordModel(String fileName) {
-    this.fileName = fileName;
+  public PasswordModel() {
+    this.fileName = getFileNameFromConfig();
+    if (fileName == null || fileName.isEmpty()) {
+      createConfig();
+    }
+  }
+
+  private String getFileNameFromConfig() {
+    Properties properties = new Properties();
+    try (FileReader reader = new FileReader("config.properties")) {
+      properties.load(reader);
+      return properties.getProperty("filename");
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
+  private void createConfig() {
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("No filename found. Please enter a filename:");
+    fileName = scanner.nextLine();
+
+    try (FileWriter writer = new FileWriter("config.properties")) {
+      Properties properties = new Properties();
+      properties.setProperty("filename", fileName);
+      properties.store(writer, null);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    File file = new File(fileName);
+    try {
+      if (file.createNewFile()) {
+        System.out.println("File created: " + fileName);
+      } else {
+        System.out.println("File already exists: " + fileName);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      scanner.close();
+    }
   }
 
   public void addPassword(String name, String password) {
@@ -93,11 +139,24 @@ public class PasswordModel {
         String decryptedPassword = decrypt(encryptedPassword);
         if (decryptedPassword != null) {
           decryptedPassword = decryptedPassword.trim();
-          // TODO: should add for windows also
           try {
-            // if we try to use echo it will add also \n to copied password
-            String[] cmd = { "bash", "-c", "printf '%s' '" + decryptedPassword + "' | pbcopy" };
-            Runtime.getRuntime().exec(cmd);
+            // https://stackoverflow.com/questions/6710350/copying-text-to-the-clipboard-using-java
+            String os = System.getProperty("os.name").toLowerCase();
+            if (os.contains("win")) {
+              // Windows-specific clipboard command
+              StringSelection stringSelection = new StringSelection(decryptedPassword);
+              Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+              clipboard.setContents(stringSelection, null);
+            } else if (os.contains("mac")) {
+              // Mac-specific clipboard command
+              String[] cmd = { "bash", "-c", "printf '%s' '" + decryptedPassword + "' | pbcopy" };
+              Runtime.getRuntime().exec(cmd);
+            } else {
+              // Linux-specific clipboard command
+              String[] cmd = { "bash", "-c",
+                  "printf '%s' '" + decryptedPassword + "' | xclip -selection clipboard" };
+              Runtime.getRuntime().exec(cmd);
+            }
             System.out.println("Password for " + name + " copied to clipboard!");
           } catch (IOException e) {
             e.printStackTrace();

@@ -3,8 +3,6 @@
 javac -cp src/main/java src/main/java/com/slobodan/*.java
 
 if [ $? -eq 0 ]; then
-    echo "Compilation successful."
-
     java -cp src/main/java com.slobodan.Main
 else
     echo "Compilation failed, what is wrong with you bruhh"

@@ -6,7 +6,7 @@ import com.slobodan.view.PasswordView;
 
 public class Main {
     public static void main(String[] args) {
-        PasswordModel model = new PasswordModel("passwords.txt");
+        PasswordModel model = new PasswordModel();
         PasswordView view = new PasswordView();
         PasswordController controller = new PasswordController(model, view);
 
@@ -14,5 +14,6 @@ public class Main {
         controller.addPassword("facebook", "slobodanz123");
         controller.getPasswords();
         controller.copyPassword("gmail");
+        controller.startApplication();
     }
 }

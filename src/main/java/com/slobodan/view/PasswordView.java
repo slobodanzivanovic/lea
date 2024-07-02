@@ -13,11 +13,15 @@ public class PasswordView {
     }
   }
 
-  public void displayDecryptedPassword(String serviceName, String decryptedPassword) {
-    System.out.println("Decrypted Password for " + serviceName + ": " + decryptedPassword);
-  }
-
   public void displayMessage(String message) {
     System.out.println(message);
+  }
+
+  public void displayOptions() {
+    System.out.println("Select an option:");
+    System.out.println("1. Add Password");
+    System.out.println("2. Get Passwords");
+    System.out.println("3. Copy Password");
+    System.out.println("4. Exit");
   }
 }
