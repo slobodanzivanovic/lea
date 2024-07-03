@@ -19,6 +19,8 @@ public class PasswordController {
   }
 
   public void startApplication() {
+    view.initialScreen();
+
     boolean running = true;
     while (running) {
       view.displayOptions();

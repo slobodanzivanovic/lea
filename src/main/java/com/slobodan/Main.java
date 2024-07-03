@@ -10,10 +10,6 @@ public class Main {
         PasswordView view = new PasswordView();
         PasswordController controller = new PasswordController(model, view);
 
-        controller.addPassword("gmail", "jakasifra123");
-        controller.addPassword("facebook", "slobodanz123");
-        controller.getPasswords();
-        controller.copyPassword("gmail");
         controller.startApplication();
     }
 }

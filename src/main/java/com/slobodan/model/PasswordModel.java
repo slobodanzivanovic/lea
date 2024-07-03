@@ -152,6 +152,7 @@ public class PasswordModel {
               String[] cmd = { "bash", "-c", "printf '%s' '" + decryptedPassword + "' | pbcopy" };
               Runtime.getRuntime().exec(cmd);
             } else {
+              // TODO:
               // Linux-specific clipboard command
               String[] cmd = { "bash", "-c",
                   "printf '%s' '" + decryptedPassword + "' | xclip -selection clipboard" };

@@ -24,4 +24,16 @@ public class PasswordView {
     System.out.println("3. Copy Password");
     System.out.println("4. Exit");
   }
+
+  public void initialScreen() {
+    System.out.println();
+    System.out.println(" _      _____  ___  ");
+    System.out.println("| |    |  ___|/ _ \\ ");
+    System.out.println("| |    | |__ / /_\\ \\");
+    System.out.println("| |    |  __||  _  |");
+    System.out.println("| |____| |___| | | |");
+    System.out.println("\\_____/\\____/\\_| |_/");
+    System.out.println("                    ");
+    System.out.println();
+  }
 }
