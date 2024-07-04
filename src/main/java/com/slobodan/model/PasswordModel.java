@@ -16,6 +16,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -139,30 +140,8 @@ public class PasswordModel {
         String decryptedPassword = decrypt(encryptedPassword);
         if (decryptedPassword != null) {
           decryptedPassword = decryptedPassword.trim();
-          try {
-            // https://stackoverflow.com/questions/6710350/copying-text-to-the-clipboard-using-java
-            String os = System.getProperty("os.name").toLowerCase();
-            if (os.contains("win")) {
-              // Windows-specific clipboard command
-              StringSelection stringSelection = new StringSelection(decryptedPassword);
-              Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-              clipboard.setContents(stringSelection, null);
-            } else if (os.contains("mac")) {
-              // Mac-specific clipboard command
-              String[] cmd = { "bash", "-c", "printf '%s' '" + decryptedPassword + "' | pbcopy" };
-              Runtime.getRuntime().exec(cmd);
-            } else {
-              // TODO:
-              // Linux-specific clipboard command
-              String[] cmd = { "bash", "-c",
-                  "printf '%s' '" + decryptedPassword + "' | xclip -selection clipboard" };
-              Runtime.getRuntime().exec(cmd);
-            }
-            System.out.println("Password for " + name + " copied to clipboard!");
-          } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Error copying password to clipboard.");
-          }
+          copyToClipboard(decryptedPassword);
+          System.out.println("Password for " + name + " copied to clipboard!");
         } else {
           System.out.println("Error: Failed to decrypt password.");
         }
@@ -170,6 +149,60 @@ public class PasswordModel {
       }
     }
     System.out.println("Password for " + name + " not found.");
+  }
+
+  public String generatePassword(int length) {
+    StringBuilder randomPassword = new StringBuilder(length);
+
+    for (int j = 0; j < length; j++) {
+      randomPassword.append(randomCharacter());
+    }
+
+    String generatedPassword = randomPassword.toString();
+    copyToClipboard(generatedPassword);
+    System.out.println("Generated password copied to clipboard!");
+    return generatedPassword;
+  }
+
+  private void copyToClipboard(String text) {
+    try {
+      String os = System.getProperty("os.name").toLowerCase();
+      if (os.contains("win")) {
+        StringSelection stringSelection = new StringSelection(text);
+        Clipboard clipboard = Toolkit.getDefaultToolkit()
+            .getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
+      } else if (os.contains("mac")) {
+        String[] cmd = {
+            "bash",
+            "-c",
+            "printf '%s' '" + text + "' | pbcopy",
+        };
+        Runtime.getRuntime().exec(cmd);
+      } else {
+        String[] cmd = {
+            "bash",
+            "-c",
+            "printf '%s' '" + text + "' | xclip -selection clipboard",
+        };
+        Runtime.getRuntime().exec(cmd);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.out.println("Error copying text to clipboard.");
+    }
+  }
+
+  public char randomCharacter() {
+    int rand = ThreadLocalRandom.current().nextInt(62);
+
+    if (rand < 10) {
+      return (char) ('0' + rand); // 0-9
+    } else if (rand < 36) {
+      return (char) ('A' + rand - 10); // 10-35 mapped to A-Z
+    } else {
+      return (char) ('a' + rand - 36); // 36-61 mapped to a-z
+    }
   }
 
   /*

@@ -22,7 +22,8 @@ public class PasswordView {
     System.out.println("1. Add Password");
     System.out.println("2. Get Passwords");
     System.out.println("3. Copy Password");
-    System.out.println("4. Exit");
+    System.out.println("4. Generate Password");
+    System.out.println("5. Exit");
   }
 
   public void initialScreen() {

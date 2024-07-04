@@ -52,6 +52,9 @@ public class PasswordController {
           copyPassword();
           break;
         case 4:
+          generatePassword();
+          break;
+        case 5:
           running = false;
           break;
         default:
@@ -88,5 +91,15 @@ public class PasswordController {
 
   public void copyPassword(String name) {
     model.copyPassword(name);
+  }
+
+  private void generatePassword() {
+    System.out.println("How long password you want to be:");
+    int length = scanner.nextInt();
+    model.generatePassword(length);
+  }
+
+  public void generatePassword(int length) {
+    model.generatePassword(length);
   }
 }
